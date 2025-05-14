@@ -1,0 +1,46 @@
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load dataset (replace with your dataset)
+data = pd.DataFrame({
+    'Speed': np.random.randint(30, 100, 1000),
+    'Road_Conditions': np.random.choice(['Good', 'Bad'], 1000),
+    'Weather': np.random.choice(['Clear', 'Rainy', 'Snowy'], 1000),
+    'Accident': np.random.choice([0, 1], 1000)
+})
+
+# Convert categorical variables to numerical
+data['Road_Conditions'] = data['Road_Conditions'].map({'Good': 0, 'Bad': 1})
+data['Weather'] = data['Weather'].map({'Clear': 0, 'Rainy': 1, 'Snowy': 2})
+
+# Split dataset into features and target
+X = data[['Speed', 'Road_Conditions', 'Weather']]
+y = data['Accident']
+
+# Split dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Train a random forest classifier
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+
+# Evaluate model performance
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy:", accuracy)
+print("Classification Report:")
+print(classification_report(y_test, y_pred))
+
+# Feature importance
+feature_importances = model.feature_importances_
+feature_names = X.columns
+sns.barplot(x=feature_names, y=feature_importances)
+plt.title("Feature Importances")
+plt.show()
